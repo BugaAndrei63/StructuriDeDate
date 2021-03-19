@@ -3,5 +3,7 @@ Proiectul nostru consta in construirea unei structuri de date pe baza unei liste
 
 Echipa:
 -Buga Andrei
+
 -Dobre Andreea - Madalina
+
 -Paraschiv Darius - Andrei
