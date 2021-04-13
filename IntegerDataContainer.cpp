@@ -5,6 +5,7 @@ using namespace std;
 struct element
 {
     int value;
+
     int index;
 
     element * next;
@@ -119,13 +120,19 @@ class idc //integer data container
     element* min()
     {
         element * min = first;
+        element * start = first;
 
-        for(int i = 0; i<= cardinal; i++)
+        while(start->next != nullptr)
         {
-            if((*this)[i]->value < min->value)
+            if(start->value < min->value)
             {
-                min = (*this)[i];
+                min = start;
             }
+            start = start->next;
+        }
+        if(start->value < min->value)
+        {
+            min = start;
         }
 
         return min;
@@ -134,13 +141,19 @@ class idc //integer data container
     element* max()
     {
         element * max = first;
+        element * start = first;
 
-        for(int i = 0; i<= cardinal; i++)
+        while(start->next != nullptr)
         {
-            if((*this)[i]->value > max->value)
+            if(start->value > max->value)
             {
-                max = (*this)[i];
+                max = start;
             }
+            start = start->next;
+        }
+        if(start->value > max->value)
+        {
+            max = start;
         }
 
         return max;
@@ -150,17 +163,25 @@ class idc //integer data container
     {
         if(index_check(index) != 0)
         {
-            int difference = (*this)[index]->value - (*this).min()->value;
+            element * start = first;
+            element * my_element = (*this)[index];
+
+            int difference = my_element->value - (*this).min()->value;
             int pos = -1;
-            for(int i = 0; i <= cardinal ; i++)
+
+            
+           
+            while(start != nullptr)
             {
-                
-                if((*this)[i] != (*this)[index] && (*this)[i]->value > (*this)[index]->value &&abs((*this)[i]->value - (*this)[index]->value) < difference)
+                if(start != my_element && start->value > my_element->value && abs(start->value - my_element->value) < difference)
                 {
-                    difference = abs((*this)[i]->value - (*this)[index]->value);
-                    pos = i;
+                    difference = abs(start->value - my_element->value);
+                    pos = start->index;
                 }
+                start = start->next;
             }
+            
+            
             if(pos == -1)
             {
                 cout<<"No succesors.";
@@ -168,6 +189,7 @@ class idc //integer data container
             {
                 return (*this)[pos];
             }
+
         }else
         {
             cout<<"Null";
@@ -182,17 +204,22 @@ class idc //integer data container
     {
        if(index_check(index) != 0)
        {
-            int difference = abs((*this)[index]->value - (*this).min()->value);
+            element * start = first;
+            element * my_element = (*this)[index];
+
+            int difference = abs(my_element->value - (*this).min()->value);
             int pos = -1;
-            for(int i = 0; i <= cardinal ; i++)
+
+           while(start !=nullptr)
             {
-                
-                if((*this)[i] != (*this)[index] && (*this)[i]->value < (*this)[index]->value && abs((*this)[index]->value - (*this)[i]->value) <= difference)
+                if(start != my_element && start->value < my_element->value && abs(my_element->value - start->value) <= difference)
                 {
-                    difference = abs((*this)[index]->value - (*this)[i]->value);
-                    pos = i;
+                    difference = abs(my_element->value - start->value);
+                    pos = start->index;
                 }
+                start = start->next;
             }
+
             if(pos == -1)
             {
                 cout<<"No predecesors.";
@@ -200,6 +227,7 @@ class idc //integer data container
             {
                 return (*this)[pos];
             }
+
        }else
         {
             cout<<"Null";
@@ -214,24 +242,34 @@ class idc //integer data container
         if(index_check(order) != 0)
         {
             idc temp_list;
+            element * start = first;
 
-            for(int i = 0; i <= cardinal ; i++)
+            while(start != nullptr)
             {
-                temp_list.insert((*this)[i]->value);
+                temp_list.insert(start->value);
+                start = start->next;
             }
 
             for(int i = 1; i < order ; i++)
             {
                 temp_list.del(temp_list.min()->index);
             }
+             
+            int min = temp_list.min()->value;
+            
+            start = first;
 
-            for(int i = 0; i <= cardinal ; i++)
+            while(start != nullptr)
             {
-                if((*this)[i]->value == temp_list.min()->value)
+                if(start->value == min)
                 {
-                    return (*this)[i];
+                    return start;
                 }
+                start = start->next;
+                
             }
+            
+
         }else
         {
             cout<<"Null";
@@ -247,12 +285,15 @@ class idc //integer data container
 
     bool inside(int value)
     {
-        for(int i = 0; i<= cardinal;i++)
+        element * start = first;
+
+        while(start != nullptr)
         {
-            if((*this)[i]->value == value )
+            if(start->value == value )
             {
                 return 1;
             }
+            start = start->next;
         }
         return 0;
     }
@@ -359,8 +400,8 @@ int main()
     cout<<"Min: "<<lista.min()->value<<endl; //min
     cout<<"Max: "<<lista.max()->value<<endl; //max
     cout<<"Succesor: "<<lista.succesor(5)->value<<endl; //succesor
-    cout<<"Predecesor: "<<lista.predecessor(200)<<endl; //predecesor
-    cout<<"k-element: "<<lista.k_element(120)<<endl;  //smallest element in ascending order
+    cout<<"Predecesor: "<<lista.predecessor(0)->value<<endl; //predecesor
+    cout<<"k-element: "<<lista.k_element(3)->value<<endl;  //smallest element in ascending order
     cout<<"Inside: "<<lista.inside(-12)<<endl; //is in the list
     cout<<"Inside: "<<lista.inside(11)<<endl;
     return 1;
