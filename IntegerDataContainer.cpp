@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 
@@ -185,6 +186,7 @@ class idc //integer data container
             if(pos == -1)
             {
                 cout<<"No succesors.";
+                return nullptr;
             }else
             {
                 return (*this)[pos];
@@ -223,6 +225,7 @@ class idc //integer data container
             if(pos == -1)
             {
                 cout<<"No predecesors.";
+                return nullptr;
             }else
             {
                 return (*this)[pos];
@@ -371,38 +374,66 @@ class idc //integer data container
 
 int main()
 {
-    
+    ifstream f("in.txt");
+    ofstream o("out.txt");
+
+
+
     idc lista;
-    lista.insert(9);
-    lista.insert(-3);
-    lista.insert(-568);
-    lista.insert(-4);
-    lista.insert(-10);
-    lista.insert(1000);
-    lista.insert(32);
-    lista.insert(45);
-    lista.insert(-324);
-    lista.insert(40392);
-    lista.insert(-3232);
-    lista.insert(-2);
-    lista.insert(62323);
-    lista.insert(-122222);
-    lista.insert(-12);
+    string integ;
 
-
-    cout<<lista[10]->value<<endl; //afisare valoare singulara
-    cout<<lista<<endl; //afisare lista
-    //lista.del(-1); //stergere elementul de pe pozitia 3
-    cout<<endl;
-    cout<<lista[9]->value<<endl;
-    cout<<lista<<endl; //reafisare lista
+    while(getline(f,integ))
+    {
+        lista.insert(stoi(integ));
+    }
+    o<<"Lista este: "<<lista<<endl;//afisare lista
     
-    cout<<"Min: "<<lista.min()->value<<endl; //min
-    cout<<"Max: "<<lista.max()->value<<endl; //max
-    cout<<"Succesor: "<<lista.succesor(5)->value<<endl; //succesor
-    cout<<"Predecesor: "<<lista.predecessor(0)->value<<endl; //predecesor
-    cout<<"k-element: "<<lista.k_element(3)->value<<endl;  //smallest element in ascending order
-    cout<<"Inside: "<<lista.inside(-12)<<endl; //is in the list
-    cout<<"Inside: "<<lista.inside(11)<<endl;
+    o<<"Elementul de pe pozitia 10 din lista este: "<<lista[10]->value<<endl; //afisare valoare singulara
+
+    o<<"Am sters elementul de pe pozitia 10. "<<endl;
+
+    lista.del(10); //stergere elementul de pe pozitia 3
+
+    o<<"Elementul de pe pozitia 9 din lista este: "<<lista[9]->value<<endl;
+
+    o<<"Lista este: "<<lista<<endl; //reafisare lista
+
+    o<<"Min: "<<lista.min()->value<<endl; //min
+
+    o<<"Max: "<<lista.max()->value<<endl; //max
+
+    int i = 6;
+    if(lista.succesor(i) != nullptr)
+    {
+        o<<"Valoarea succesorului elementului de pe pozitia "<<i<<" este: "<<lista.succesor(i)->value<<endl; //succesor
+    }else
+    {
+        o<<"Elementul de pe pozitia "<<i<<" nu are succesor."<<endl;
+    }
+
+    int j = 0;
+    if(lista.predecessor(j) != nullptr)
+    {
+        o<<"Valoarea predecesorului elementului de pe pozitia "<<j<<" este: "<<lista.predecessor(j)->value<<endl; //predecessor
+    }else
+    {
+        o<<"Elementul de pe pozitia "<<j<<" nu are predecesor."<<endl;
+    }
+
+    int k = 0;
+    if(lista.k_element(k) != nullptr) //smallest element in ascending order
+    {
+        o<<"Elementul numarul "<<k<<" in ordine crescatoare este: "<<lista.predecessor(k)->value<<endl; //predecessor
+    }else
+    {
+        o<<"Nu exista element pe pozitia "<<k<<endl;
+    }  
+
+    o<<"Inside: "<<lista.inside(-12)<<endl; //is in the list
+
+    o<<"Inside: "<<lista.inside(11)<<endl;
+
+    f.close();
+    o.close();
     return 1;
 }
