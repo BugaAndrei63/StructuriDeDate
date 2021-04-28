@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
 using namespace std;
 
 
@@ -15,12 +16,12 @@ struct element
 
 class idc //integer data container
 {
-    public:
-
+    private:
     element * last;
     element * first;
     int cardinal;
-        
+
+    public:   
     idc()
     {
          last = nullptr;
@@ -32,33 +33,38 @@ class idc //integer data container
     
     void insert(int value)
     {
-        element * new_element = new element;
-
-        if(first == nullptr)
+        if(value < -2147483648 || value > 2147483647)
         {
-            new_element->next = last;
-            new_element->prev = nullptr;
-            new_element->value = value;
-            new_element->index = 0;
-
-            first = new_element;
-            last = new_element;
-
+            cout<<"Invalid value";
         }else
         {
+            element * new_element = new element;
             
-            last->next = new_element;
+            if(first == nullptr)
+            {
+                new_element->next = last;
+                new_element->prev = nullptr;
+                new_element->value = value;
+                new_element->index = 0;
 
-            new_element->next = nullptr;
-            new_element->prev = last;
-            new_element->value = value;
-            new_element->index = cardinal + 1;
+                first = new_element;
+                last = new_element;
 
-            cardinal++;
-            
-            last = new_element;
+            }else
+            {
+                
+                last->next = new_element;
+
+                new_element->next = nullptr;
+                new_element->prev = last;
+                new_element->value = value;
+                new_element->index = cardinal + 1;
+
+                cardinal++;
+                
+                last = new_element;
+            }
         }
-
 
     }
 
@@ -76,44 +82,37 @@ class idc //integer data container
     {
         if(index_check(index) != 0)
         {
-            int i = 0;
-            while(i <= cardinal)
+            
+            element * temp_prev = (*this)[index]->prev;
+            element * temp_next = (*this)[index]->next;
+
+            if(temp_prev != nullptr)
             {
-                
-                if(i == index)
-                {
-                    element * temp_prev = (*this)[i]->prev;
-                    element * temp_next = (*this)[i]->next;
-
-                    if(temp_prev != nullptr)
-                    {
-                        temp_prev->next = temp_next;
-                    }
-                    else
-                    {
-                        first = temp_next;
-                    }
-
-                    if(temp_next != nullptr)
-                    {
-                        temp_next->prev = temp_prev;
-                        element * temp = temp_next;
-                        while(temp->next != nullptr)
-                        {
-                            temp->index -=1;
-                            temp = temp->next;
-                        }
-                        temp->index -=1;
-                    }else
-                    {
-                        last = temp_prev;
-                    }
-                    cardinal -= 1;
-                    
-                    break;            
-                }
-                i++;
+                temp_prev->next = temp_next;
             }
+            else
+            {
+                first = temp_next;
+            }
+
+            if(temp_next != nullptr)
+            {
+                temp_next->prev = temp_prev;
+                element * temp = temp_next;
+                while(temp->next != nullptr)
+                {
+                    temp->index -=1;
+                    temp = temp->next;
+                }
+                temp->index -=1;
+            }else
+            {
+                last = temp_prev;
+            }
+            cardinal -= 1;
+                      
+                
+            
         }
      
     }
@@ -167,7 +166,7 @@ class idc //integer data container
             element * start = first;
             element * my_element = (*this)[index];
 
-            int difference = my_element->value - (*this).min()->value;
+            int difference = my_element->value - (*this).min()->value + 2;
             int pos = -1;
 
             
@@ -240,11 +239,12 @@ class idc //integer data container
         
     }
 
+
     element * k_element(int order)
     {
-        if(index_check(order) != 0)
+        if(index_check(order-1) != 0)
         {
-            idc temp_list;
+            idc temp_list; 
             element * start = first;
 
             while(start != nullptr)
@@ -271,6 +271,11 @@ class idc //integer data container
                 start = start->next;
                 
             }
+
+
+            
+            return start;
+            
             
 
         }else
@@ -307,7 +312,7 @@ class idc //integer data container
     {
         
         element * start =  container.first;
-        //element * start = container.last;       invers
+        //element * start = container.last;       from back to front *
         
         while(start->index < container.cardinal)
         {
@@ -316,7 +321,7 @@ class idc //integer data container
             
         }
         os<<" "<<start->value;
-        /*while(start->index >= 0)       invers
+        /*while(start->index >= 0)       from back to front *
         {
             os<<" "<<start->value;
             
@@ -372,13 +377,12 @@ class idc //integer data container
 
 
 
-int main()
+int main() //driver code for every function
 {
+    
+
     ifstream f("in.txt");
     ofstream o("out.txt");
-
-
-
     idc lista;
     string integ;
 
@@ -386,54 +390,64 @@ int main()
     {
         lista.insert(stoi(integ));
     }
-    o<<"Lista este: "<<lista<<endl;//afisare lista
+
+    auto begin = chrono::high_resolution_clock::now();
+
+    o<<"List is: "<<lista<<endl;//shows the list
     
-    o<<"Elementul de pe pozitia 10 din lista este: "<<lista[10]->value<<endl; //afisare valoare singulara
+    o<<"The element on the 10-th position is: "<<lista[10]->value<<endl; //showing a single handpicked element
 
-    o<<"Am sters elementul de pe pozitia 10. "<<endl;
+    o<<"Deleted 19-th element "<<endl;
 
-    lista.del(10); //stergere elementul de pe pozitia 3
+    lista.del(19); //deletes element 19
 
-    o<<"Elementul de pe pozitia 9 din lista este: "<<lista[9]->value<<endl;
+    o<<"The element on the 19-th position is: "<<lista[19]->value<<endl;
 
-    o<<"Lista este: "<<lista<<endl; //reafisare lista
+    o<<"List is: "<<lista<<endl; //reshowing of the list
 
     o<<"Min: "<<lista.min()->value<<endl; //min
 
     o<<"Max: "<<lista.max()->value<<endl; //max
 
-    int i = 6;
+    int i = 0;
     if(lista.succesor(i) != nullptr)
     {
-        o<<"Valoarea succesorului elementului de pe pozitia "<<i<<" este: "<<lista.succesor(i)->value<<endl; //succesor
+        o<<"The value of the succesor of the "<<i<<" element is: "<<lista.succesor(i)->value<<endl; //succesor
     }else
     {
-        o<<"Elementul de pe pozitia "<<i<<" nu are succesor."<<endl;
+       o<<"The element on the "<<i<<" position doesn't have a succesor."<<endl;
     }
 
     int j = 0;
     if(lista.predecessor(j) != nullptr)
     {
-        o<<"Valoarea predecesorului elementului de pe pozitia "<<j<<" este: "<<lista.predecessor(j)->value<<endl; //predecessor
+        o<<"The value of the predeccesor of the "<<j<<" element is: "<<lista.predecessor(j)->value<<endl; //predecessor
     }else
     {
-        o<<"Elementul de pe pozitia "<<j<<" nu are predecesor."<<endl;
+        o<<"The element on the "<<j<<" position doesn't have a predeccesor."<<endl;
     }
 
-    int k = 0;
+    int k = 10;
     if(lista.k_element(k) != nullptr) //smallest element in ascending order
     {
-        o<<"Elementul numarul "<<k<<" in ordine crescatoare este: "<<lista.predecessor(k)->value<<endl; //predecessor
+        o<<"The "<<k<<"-th element in ascending order is: "<<lista.k_element(k)->value<<endl; //k element
     }else
     {
-        o<<"Nu exista element pe pozitia "<<k<<endl;
-    }  
+        o<<"There is no element on the "<<k<<" position"<<endl;
+    }
 
     o<<"Inside: "<<lista.inside(-12)<<endl; //is in the list
 
     o<<"Inside: "<<lista.inside(11)<<endl;
 
+    
+
     f.close();
     o.close();
+
+    auto end = chrono::high_resolution_clock::now();
+    auto elapsed = chrono::duration_cast<chrono::nanoseconds>(end-begin);
+    cout<<endl<<"Time till exit: "<<elapsed.count() * 1e-9<<" seconds";
+
     return 1;
 }
